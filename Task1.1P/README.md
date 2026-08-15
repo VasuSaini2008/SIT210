@@ -50,9 +50,11 @@ This makes the program easier for me to understand and follow.
 
 ## Testing
 
-I will test the circuit by pressing the button and checking the two LEDs.
+I tested the circuit by pressing the button. Both LEDs turned on.
 
-The porch LED should turn off after 30 seconds. The hallway LED should turn off after 60 seconds.
+After 30 seconds, the porch LED turned off. After 60 seconds, the hallway LED also turned off.
+
+The circuit worked as expected.
 
 ## Evidence
 
