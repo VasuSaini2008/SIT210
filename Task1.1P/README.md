@@ -8,7 +8,7 @@ When the button is pressed, both lights turn on. The porch light turns off after
 
 ## Components Used
 
-- Arduino Uno
+- Arduino Nano 33 IoT
 - Push button
 - 2 LEDs
 - Resistors
