@@ -1,32 +1,33 @@
-// SIT210 Task 1.1P
-const int buttonpin = 2; //The button is connected to D2.
-const int porchpin = 3; // The porchpin is connected to D3.
-const in hallwaypin = 4; //The halwaypin is connected to D4.
+int RedLed = 8;   //pin for Red LED
+int BlueLed = 6;  // pin for Blue LED
+int BUTTON = 2;   //pin for Button
 
-void setup() //This run when the ardiuno start.
-{
-  pinMode (buttonpin, input); //Its tells that the button sends information to ardiuno.
-  pinMode (porchpin, output); //Its tells that the ardiuno is controlled by ardiuno.
-  pinMode (hallwaypin, output); //Its tells that the hallwapin is controlled by ardiuno.
+unsigned long startTime; //creates a variable and will start the timer when button is pressed
+
+void setup() { //This code will run only once
+  pinMode(RedLed, OUTPUT); //sets RedLed as the output as ardiuno controls it
+  pinMode(BlueLed, OUTPUT); //sets BlueLed as the output as arduino controls it
+  pinMode(BUTTON, INPUT_PULLUP); //sets Button as the input as arduino reads it
+
+  digitalWrite(RedLed, LOW); //RedLed will be OFF at start
+  digitalWrite(BlueLed, LOW); //BlueLed will be OFF at start
 }
 
-void loop()
-{
+void loop() { //this code will repeat in loop
 
-  int buttonState = digitalRead(buttonPin); //Read the current state of the push button
+  if (digitalRead(BUTTON) == LOW) { //when the button is clicked
+    digitalWrite(RedLed, HIGH); //turn the RedLed ON+
+    digitalWrite(BlueLed, HIGH); //turn the BlueLed ON
+    startTime = millis(); //start the timer
 
-  if (buttonState == HIGH) // Check whether the button has been pressed
-  {
-    // Turn ON both lights
-    digitalWrite(porchPin, HIGH);
-    digitalWrite(hallwayPin, HIGH);
+    while (millis() - startTime < 30000) { //LEDs/porch light stays ON for 30 seconds
+    }
 
-    delay(30000); //Keep both lights ON for 30 seconds
+    digitalWrite(RedLed, LOW); //turn OFF RedLed after 30 seconds
 
-    digitalWrite(porchPin, LOW); //Turn OFF the porch light after 30 seconds
+    while (millis() - startTime < 60000) { //BlueLed/hallway light stay ON for 60 seconds
+    }
 
-    delay(30000); //Keep the hallway light ON for another 30 seconds
-  
-    digitalWrite(hallwayPin, LOW); //Turn OFF the hallway light after a total of 60 seconds
+    digitalWrite(BlueLed, LOW); //turn OFF BlueLed after 60 seconds
   }
-
+}
