@@ -3,8 +3,8 @@
 #include <Wire.h>
 #include <BH1750.h>
 
-char ssid[] = "YOUR_WIFI_NAME";
-char password[] = "YOUR_WIFI_PASSWORD";
+char ssid[] = "iphone";
+char password[] = "12345678";
 
 const char* mqttServer = "192.168.1.5";
 const int mqttPort = 1883;
