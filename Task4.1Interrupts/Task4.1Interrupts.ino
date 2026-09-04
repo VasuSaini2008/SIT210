@@ -1,90 +1,138 @@
-const int pirPin = 2;
-const int switchPin = 3;
+#include <Wire.h>
+#include <BH1750.h>
 
-const int led1 = 8;
-const int led2 = 9;
+BH1750 lightSensor;
 
-volatile bool motionDetected = false;
-volatile bool switchPressed = false;
+// Pins
+const int PIR_PIN = 2;
+const int BUTTON_PIN = 3;
+const int LED1_PIN = 4;
+const int LED2_PIN = 5;
 
+// Darkness threshold
+const float DARK_LEVEL = 50.0;
+
+// Light ON time
+const unsigned long LIGHT_TIME = 30000;  // 30 seconds
+
+// Interrupt flags
+volatile bool pirTriggered = false;
+volatile bool buttonTriggered = false;
+
+// Timer
+unsigned long lightStartTime = 0;
 bool lightsOn = false;
 
 // PIR interrupt
-void pirISR() {
-  motionDetected = true;
+void pirInterrupt()
+{
+  pirTriggered = true;
 }
 
-// Switch interrupt
-void switchISR() {
-  switchPressed = true;
+// Button interrupt
+void buttonInterrupt()
+{
+  buttonTriggered = true;
 }
 
-void setup() {
-
+void setup()
+{
   Serial.begin(9600);
 
-  pinMode(pirPin, INPUT);
-  pinMode(switchPin, INPUT_PULLUP);
+  pinMode(PIR_PIN, INPUT);
+  pinMode(BUTTON_PIN, INPUT_PULLUP);
 
-  pinMode(led1, OUTPUT);
-  pinMode(led2, OUTPUT);
+  pinMode(LED1_PIN, OUTPUT);
+  pinMode(LED2_PIN, OUTPUT);
 
-  digitalWrite(led1, LOW);
-  digitalWrite(led2, LOW);
+  digitalWrite(LED1_PIN, LOW);
+  digitalWrite(LED2_PIN, LOW);
+
+  // Start BH1750
+  Wire.begin();
+
+  if (lightSensor.begin())
+  {
+    Serial.println("BH1750 ready.");
+  }
+  else
+  {
+    Serial.println("BH1750 not detected.");
+  }
 
   // PIR interrupt
   attachInterrupt(
-    digitalPinToInterrupt(pirPin),
-    pirISR,
+    digitalPinToInterrupt(PIR_PIN),
+    pirInterrupt,
     RISING
   );
 
-  // Button interrupt
+  // Push button interrupt
   attachInterrupt(
-    digitalPinToInterrupt(switchPin),
-    switchISR,
+    digitalPinToInterrupt(BUTTON_PIN),
+    buttonInterrupt,
     FALLING
   );
 
-  Serial.println("Task 4.1P - Interrupt System Started");
-  Serial.println("System ready...");
+  Serial.println("System ready.");
 }
 
-void loop() {
+void loop()
+{
+  // PIR MOTION
 
-  // PIR detected movement
-  if (motionDetected) {
+  if (pirTriggered)
+  {
+    pirTriggered = false;
 
-    motionDetected = false;
+    float lux = lightSensor.readLightLevel();
 
-    lightsOn = !lightsOn;
+    Serial.print("Motion detected. Light: ");
+    Serial.print(lux);
+    Serial.println(" lux");
 
-    digitalWrite(led1, lightsOn);
-    digitalWrite(led2, lightsOn);
+    // Only turn on automatically when dark
+    if (lux < DARK_LEVEL)
+    {
+      digitalWrite(LED1_PIN, HIGH);
+      digitalWrite(LED2_PIN, HIGH);
 
-    if (lightsOn) {
-      Serial.println("Motion detected - Lights ON");
-    } else {
-      Serial.println("Motion detected - Lights OFF");
+      lightsOn = true;
+      lightStartTime = millis();
+
+      Serial.println("Dark - Lights ON for 35 seconds");
+    }
+    else
+    {
+      Serial.println("Bright - Lights remain OFF");
     }
   }
+  // PUSH BUTTON
 
-  // Switch pressed
-  if (switchPressed) {
+  if (buttonTriggered)
+  {
+    buttonTriggered = false;
 
-    switchPressed = false;
+    digitalWrite(LED1_PIN, HIGH);
+    digitalWrite(LED2_PIN, HIGH);
 
-    delay(100);  // button debounce
+    lightsOn = true;
+    lightStartTime = millis();
 
-    lightsOn = !lightsOn;
-
-    digitalWrite(led1, lightsOn);
-    digitalWrite(led2, lightsOn);
-
-    if (lightsOn) {
-      Serial.println("Switch pressed - Lights ON");
-    } else {
-      Serial.println("Switch pressed - Lights OFF");
-    }
+    Serial.println("Button pressed - Lights ON for 30 seconds");
   }
+  // 30 SECOND TIMER
+
+  if (lightsOn &&
+      millis() - lightStartTime >= LIGHT_TIME)
+  {
+    digitalWrite(LED1_PIN, LOW);
+    digitalWrite(LED2_PIN, LOW);
+
+    lightsOn = false;
+
+    Serial.println("35 seconds completed - Lights OFF");
+  }
+
+  delay(50);
 }
