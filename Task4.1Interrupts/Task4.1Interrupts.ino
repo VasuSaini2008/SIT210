@@ -5,17 +5,22 @@ const int led1 = 8;
 const int led2 = 9;
 
 volatile bool motionDetected = false;
-volatile bool switchActivated = false;
+volatile bool switchPressed = false;
 
-void motionISR() {
+bool lightsOn = false;
+
+// PIR interrupt
+void pirISR() {
   motionDetected = true;
 }
 
+// Switch interrupt
 void switchISR() {
-  switchActivated = true;
+  switchPressed = true;
 }
 
 void setup() {
+
   Serial.begin(9600);
 
   pinMode(pirPin, INPUT);
@@ -24,32 +29,62 @@ void setup() {
   pinMode(led1, OUTPUT);
   pinMode(led2, OUTPUT);
 
-  attachInterrupt(digitalPinToInterrupt(pirPin),
-                  motionISR, RISING);
+  digitalWrite(led1, LOW);
+  digitalWrite(led2, LOW);
 
-  attachInterrupt(digitalPinToInterrupt(switchPin),
-                  switchISR, FALLING);
+  // PIR interrupt
+  attachInterrupt(
+    digitalPinToInterrupt(pirPin),
+    pirISR,
+    RISING
+  );
+
+  // Button interrupt
+  attachInterrupt(
+    digitalPinToInterrupt(switchPin),
+    switchISR,
+    FALLING
+  );
 
   Serial.println("Task 4.1P - Interrupt System Started");
+  Serial.println("System ready...");
 }
 
 void loop() {
 
+  // PIR detected movement
   if (motionDetected) {
+
     motionDetected = false;
 
-    digitalWrite(led1, HIGH);
-    digitalWrite(led2, HIGH);
+    lightsOn = !lightsOn;
 
-    Serial.println("Motion detected - Lights ON");
+    digitalWrite(led1, lightsOn);
+    digitalWrite(led2, lightsOn);
+
+    if (lightsOn) {
+      Serial.println("Motion detected - Lights ON");
+    } else {
+      Serial.println("Motion detected - Lights OFF");
+    }
   }
 
-  if (switchActivated) {
-    switchActivated = false;
+  // Switch pressed
+  if (switchPressed) {
 
-    digitalWrite(led1, HIGH);
-    digitalWrite(led2, HIGH);
+    switchPressed = false;
 
-    Serial.println("Slider switch activated - Lights ON");
+    delay(100);  // button debounce
+
+    lightsOn = !lightsOn;
+
+    digitalWrite(led1, lightsOn);
+    digitalWrite(led2, lightsOn);
+
+    if (lightsOn) {
+      Serial.println("Switch pressed - Lights ON");
+    } else {
+      Serial.println("Switch pressed - Lights OFF");
+    }
   }
 }
