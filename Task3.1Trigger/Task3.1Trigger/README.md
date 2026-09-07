@@ -1,7 +1,7 @@
 # Task 3.1P - Trigger and Notification
 
 ## Project
-This project uses an Arduino Nano 33 IoT and BH1750 light sensor
+In this project i have uses an Arduino Nano 33 IoT and BH1750 light sensor
 to measure the amount of light received by a terrarium.
 
 ## Hardware
