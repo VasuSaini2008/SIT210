@@ -1,0 +1,93 @@
+* {
+    box-sizing: border-box;
+}
+
+body {
+    margin: 0;
+    font-family: Arial, sans-serif;
+    background: #f2f2f2;
+}
+
+.container {
+    width: 90%;
+    max-width: 1000px;
+    margin: 50px auto;
+    text-align: center;
+}
+
+h1 {
+    font-size: 36px;
+    margin-bottom: 5px;
+}
+
+.subtitle {
+    color: #666;
+    margin-bottom: 40px;
+}
+
+.lights {
+    display: flex;
+    justify-content: center;
+    gap: 25px;
+    flex-wrap: wrap;
+}
+
+.room {
+    background: white;
+    width: 280px;
+    padding: 25px;
+    border-radius: 12px;
+    box-shadow: 0 3px 10px rgba(0, 0, 0, 0.15);
+}
+
+.room h2 {
+    margin-top: 0;
+}
+
+.light {
+    width: 100px;
+    height: 100px;
+
+    margin: 20px auto;
+
+    border-radius: 50%;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    font-weight: bold;
+}
+
+.light.off {
+    background: #555;
+    color: white;
+}
+
+.light.on {
+    background: yellow;
+    color: black;
+}
+
+button {
+    border: none;
+    padding: 12px 20px;
+
+    border-radius: 7px;
+
+    background: #333;
+    color: white;
+
+    cursor: pointer;
+
+    font-size: 15px;
+}
+
+button:hover {
+    background: #555;
+}
+
+#message {
+    margin-top: 30px;
+    font-weight: bold;
+}

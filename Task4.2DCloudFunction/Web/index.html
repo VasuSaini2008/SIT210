@@ -1,0 +1,84 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>Linda's Home Light Control</title>
+
+    <link rel="stylesheet" href="style.css">
+</head>
+
+<body>
+
+    <div class="container">
+
+        <h1>Linda's Home</h1>
+
+        <p class="subtitle">
+            Remote Light Control System
+        </p>
+
+        <div class="lights">
+
+            <!-- Living Room -->
+            <div class="room">
+
+                <h2>Living Room</h2>
+
+                <div id="livingLight" class="light off">
+                    OFF
+                </div>
+
+                <button onclick="toggleLight('living room')">
+                    Toggle Living Room
+                </button>
+
+            </div>
+
+
+            <!-- Bathroom -->
+            <div class="room">
+
+                <h2>Bathroom</h2>
+
+                <div id="bathroomLight" class="light off">
+                    OFF
+                </div>
+
+                <button onclick="toggleLight('bathroom')">
+                    Toggle Bathroom
+                </button>
+
+            </div>
+
+
+            <!-- Closet -->
+            <div class="room">
+
+                <h2>Closet</h2>
+
+                <div id="closetLight" class="light off">
+                    OFF
+                </div>
+
+                <button onclick="toggleLight('closet')">
+                    Toggle Closet
+                </button>
+
+            </div>
+
+        </div>
+
+        <p id="message">
+            Select a room to control the light.
+        </p>
+
+    </div>
+
+    <script src="script.js"></script>
+
+</body>
+
+</html>
