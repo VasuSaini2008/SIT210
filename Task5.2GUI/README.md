@@ -1,4 +1,3 @@
-
 # SIT210 Task 5.2C – Change Light Intensity Using GUI
 
 ## Description
@@ -38,8 +37,4 @@ The brightness slider can change the LED intensity from 0% to 100%.
 - `task5_2_gui.py` – Main Python program
 - `README.md` – Project information
 
-## Video
 
-Video Link:  
-Add your YouTube or Deakin Panopto link here.
-```
