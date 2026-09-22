@@ -1,4 +1,4 @@
-```markdown
+
 # SIT210 Task 5.2C – Change Light Intensity Using GUI
 
 ## Description
