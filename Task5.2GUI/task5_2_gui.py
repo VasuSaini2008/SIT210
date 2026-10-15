@@ -1,136 +1,141 @@
+```python
 import tkinter as tk
 import RPi.GPIO as GPIO
 
-# GPIO pins for each room
-LIVING_ROOM_PIN = 18
-BATHROOM_PIN = 23
-CLOSET_PIN = 24
 
-# Set GPIO numbering and LED pins
+# Set the GPIO pin for each room's LED
+ROOM_PINS = {
+    "Living Room": 14,
+    "Bathroom": 15,
+    "Closet": 18,
+}
+
+# Set the PWM speed for controlling LED brightness
+PWM_FREQUENCY = 1000
+
+# Use BCM numbering for GPIO pins
 GPIO.setmode(GPIO.BCM)
-GPIO.setup(LIVING_ROOM_PIN, GPIO.OUT)
-GPIO.setup(BATHROOM_PIN, GPIO.OUT)
-GPIO.setup(CLOSET_PIN, GPIO.OUT)
-
-# Set up PWM for living room brightness control
-living_pwm = GPIO.PWM(LIVING_ROOM_PIN, 1000)
-living_pwm.start(0)
 
 
-# Turn on the living room LED
-def living_room():
-    GPIO.output(BATHROOM_PIN, GPIO.LOW)
-    GPIO.output(CLOSET_PIN, GPIO.LOW)
-    living_pwm.ChangeDutyCycle(brightness.get())
+# Set up a PWM controller for each room's LED
+room_pwm = {}
+
+for room, pin in ROOM_PINS.items():
+    GPIO.setup(pin, GPIO.OUT)  # Set the pin as an output
+
+    # Create a PWM controller for the LED
+    controller = GPIO.PWM(pin, PWM_FREQUENCY)
+
+    # Start the LED with 0% brightness
+    controller.start(0)
+
+    # Store the controller for later use
+    room_pwm[room] = controller
 
 
-# Turn on the bathroom LED
-def bathroom():
-    living_pwm.ChangeDutyCycle(0)
-    GPIO.output(BATHROOM_PIN, GPIO.HIGH)
-    GPIO.output(CLOSET_PIN, GPIO.LOW)
+# Change the brightness of the selected room's LED
+def set_brightness(room, value):
+
+    # Apply the brightness value to the LED
+    room_pwm[room].ChangeDutyCycle(float(value))
 
 
-# Turn on the closet LED
-def closet():
-    living_pwm.ChangeDutyCycle(0)
-    GPIO.output(BATHROOM_PIN, GPIO.LOW)
-    GPIO.output(CLOSET_PIN, GPIO.HIGH)
+# Turn off all lights by resetting the sliders
+def switch_all_off():
+
+    # Set every slider to zero brightness
+    for slider in sliders.values():
+        slider.set(0)
 
 
-# Change living room brightness using PWM
-def change_brightness(value):
-    if room.get() == "living":
-        living_pwm.ChangeDutyCycle(float(value))
+# Stop the lights and close the application
+def close_window():
 
+    # Stop PWM control for all LEDs
+    for controller in room_pwm.values():
+        controller.stop()
 
-# Clean up GPIO and close the GUI
-def close_program():
-    living_pwm.stop()
+    # Reset the GPIO pins
     GPIO.cleanup()
-    window.destroy()
+
+    # Close the application window
+    app.destroy()
 
 
-# Create the main GUI window
-window = tk.Tk()
-window.title("Smart Home Lighting")
-window.geometry("450x450")
+# Create the main application window
+app = tk.Tk()
 
-room = tk.StringVar(value="living")
-brightness = tk.IntVar(value=50)
+# Set the window title and size
+app.title("Home Light Control")
+app.geometry("500x520")
 
-# GUI title
-title = tk.Label(
-    window,
-    text="Smart Home Lighting",
-    font=("Arial", 20, "bold")
-)
-title.pack(pady=20)
 
-# Room selection
+# Add the main heading
 tk.Label(
-    window,
-    text="Select Room",
-    font=("Arial", 14)
+    app,
+    text="Home Light Control",
+    font=("Arial", 20, "bold"),
+).pack(pady=15)
+
+
+# Store the brightness sliders for each room
+sliders = {}
+
+
+# Create a brightness slider for each room
+for room in ROOM_PINS:
+
+    # Show the room name
+    tk.Label(
+        app,
+        text=room,
+        font=("Arial", 14, "bold"),
+    ).pack()
+
+    # Create a slider to control brightness from 0 to 100
+    slider = tk.Scale(
+        app,
+        from_=0,
+        to=100,
+        orient=tk.HORIZONTAL,
+        length=350,
+        label="Brightness",
+
+        # Update the LED brightness when the slider moves
+        command=lambda value, selected_room=room: set_brightness(
+            selected_room, value
+        ),
+    )
+
+    # Display the slider
+    slider.pack(pady=10)
+
+    # Save the slider for the selected room
+    sliders[room] = slider
+
+
+# Add a button to turn off all lights
+tk.Button(
+    app,
+    text="TURN OFF ALL",
+    width=20,
+    command=switch_all_off,
+).pack(pady=15)
+
+
+# Add a button to close the application
+tk.Button(
+    app,
+    text="EXIT",
+    width=20,
+    command=close_window,
 ).pack(pady=5)
 
-living_button = tk.Radiobutton(
-    window,
-    text="Living Room",
-    variable=room,
-    value="living",
-    command=living_room,
-    font=("Arial", 12)
-)
-living_button.pack()
 
-bathroom_button = tk.Radiobutton(
-    window,
-    text="Bathroom",
-    variable=room,
-    value="bathroom",
-    command=bathroom,
-    font=("Arial", 12)
-)
-bathroom_button.pack()
+# Clean up the GPIO pins when the window is closed
+app.protocol("WM_DELETE_WINDOW", close_window)
 
-closet_button = tk.Radiobutton(
-    window,
-    text="Closet",
-    variable=room,
-    value="closet",
-    command=closet,
-    font=("Arial", 12)
-)
-closet_button.pack()
 
-# Brightness slider for living room
-tk.Label(
-    window,
-    text="Living Room Brightness",
-    font=("Arial", 14)
-).pack(pady=(30, 5))
-
-brightness_slider = tk.Scale(
-    window,
-    from_=0,
-    to=100,
-    orient=tk.HORIZONTAL,
-    length=300,
-    variable=brightness,
-    command=change_brightness
-)
-brightness_slider.pack()
-
-# Exit button
-exit_button = tk.Button(
-    window,
-    text="Exit",
-    command=close_program,
-    width=12
-)
-exit_button.pack(pady=30)
-
-# Start the GUI
-window.mainloop()
-
+# Keep the application running
+app.mainloop()
+```
