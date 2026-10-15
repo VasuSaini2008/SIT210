@@ -1,76 +1,84 @@
-from gpiozero import LED
+```python
 import tkinter as tk
+from gpiozero import LED
 
-# LED Setup
-# Connect each LED to its corresponding GPIO pin
-living = LED(17)      # Living room LED on GPIO 17
-bathroom = LED(27)    # Bathroom LED on GPIO 27
-closet = LED(22)      # Closet LED on GPIO 22
 
-# Function to control the LEDs
-# Turns OFF all LEDs first, then turns ON only the selected room's LED
-def select_room():
-    # Get the selected room
-    choice = room.get()
+# Connect each room's light to its GPIO pin
+room_lights = {
+    "Living Room": LED(14),  # Living room light
+    "Bathroom": LED(15),     # Bathroom light
+    "Closet": LED(18),       # Closet light
+}
 
-    # Turn OFF all LEDs
-    living.off()
-    bathroom.off()
-    closet.off()
 
-    # Turn ON the selected room's LED
-    if choice == "Living Room":
-        living.on()
-    elif choice == "Bathroom":
-        bathroom.on()
-    elif choice == "Closet":
-        closet.on()
+# Turn on the selected room's light
+def change_light(room_name):
 
-# Create the main GUI window
+    # Check each room and control its light
+    for room, light in room_lights.items():
+        light.value = int(room == room_name)
+
+
+# Turn off all lights and close the program
+def exit_program():
+
+    # Turn off each light and release its GPIO pin
+    for light in room_lights.values():
+        light.off()
+        light.close()
+
+    # Close the application window
+    window.quit()
+    window.destroy()
+
+
+# Create the main application window
 window = tk.Tk()
-window.title("Smart Home Lights")
-window.geometry("350x250")
 
-# Variable to store the selected room
-room = tk.StringVar()
+# Set the window title and size
+window.title("Room Light Controller")
+window.geometry("340x260")
 
-# Heading label
-title = tk.Label(window, text="Smart Home Lights")
-title.pack(pady=15)
+# Stop the user from changing the window size
+window.resizable(width=False, height=False)
 
-# Living Room radio button
-tk.Radiobutton(
+
+# Show the heading at the top of the window
+tk.Label(
     window,
-    text="Living Room",
-    variable=room,
-    value="Living Room",
-    command=select_room
-).pack()
+    text="Choose a room",
+    font=("Arial", 16, "bold"),
+).pack(pady=(18, 10))
 
-# Bathroom radio button
-tk.Radiobutton(
-    window,
-    text="Bathroom",
-    variable=room,
-    value="Bathroom",
-    command=select_room
-).pack()
 
-# Closet radio button
-tk.Radiobutton(
-    window,
-    text="Closet",
-    variable=room,
-    value="Closet",
-    command=select_room
-).pack()
+# Store the room selected by the user
+choice = tk.StringVar(window)
 
-# Exit button to close the application
+
+# Create a radio button for each room
+for room_name in room_lights:
+    tk.Radiobutton(
+        window,
+        text=room_name,
+        variable=choice,
+        value=room_name,
+        command=lambda room=room_name: change_light(room),
+        font=("Arial", 12),
+    ).pack(anchor="w", padx=85, pady=3)
+
+
+# Add a button to exit the program
 tk.Button(
     window,
     text="Exit",
-    command=window.destroy
-).pack(pady=20)
+    command=exit_program,
+).pack(pady=18)
 
-# Start the GUI event loop
+
+# Turn off the lights when the user closes the window
+window.protocol("WM_DELETE_WINDOW", exit_program)
+
+
+# Keep the window running until the user closes it
 window.mainloop()
+```
