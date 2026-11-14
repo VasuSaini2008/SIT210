@@ -20,7 +20,7 @@ char ssid[] = "YOUR_WIFI_NAME";
 char pass[] = "YOUR_WIFI_PASSWORD";
 
 // Set this to the Raspberry Pi's current LAN IP (hostname -I).
-const char* MQTT_SERVER = "192.168.137.254";
+const char* MQTT_SERVER = "YOUR_RASPBERRY_PI_IP";
 const uint16_t MQTT_PORT = 1883;
 
 const char* TOPIC_TELEMETRY = "door/system/telemetry";
